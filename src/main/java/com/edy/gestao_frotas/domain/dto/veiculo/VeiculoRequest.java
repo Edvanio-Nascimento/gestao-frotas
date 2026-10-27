@@ -35,9 +35,9 @@ public record VeiculoRequest(
     public Veiculo toEntiy() {
 
         return Veiculo.builder()
-                .marca(this.marca)
-                .modelo(this.modelo)
-                .placa(this.placa)
+                .marca(this.marca.toUpperCase())
+                .modelo(this.modelo.toUpperCase())
+                .placa(this.placa.toUpperCase())
                 .anoFabricacao(this.anoFabricacao)
                 .anoModelo(this.anoModelo)
                 .build();
