@@ -78,4 +78,12 @@ public class Veiculo implements Serializable {
         this.updatedAt = LocalDateTime.now();
     }
 
+    //    ==============================================================
+
+    public static boolean validarAno(Year anoFab, Year anoModel) {
+
+        return anoModel.isAfter(anoFab) || anoModel.equals(anoFab);
+
+    }
+
 }

@@ -18,7 +18,7 @@ public record VeiculoUpdate(
         String modelo,
 
         @NotBlank(message = "O campo é obrigatório.")
-        @Size(max = 50, message = "O campo placa deve ter no máximo 10 caracteres.")
+        @Size(max = 10, message = "O campo placa deve ter no máximo 10 caracteres.")
         String placa,
 
         @NotNull(message = "O campo ano de fabricação é obrigatŕoio.")

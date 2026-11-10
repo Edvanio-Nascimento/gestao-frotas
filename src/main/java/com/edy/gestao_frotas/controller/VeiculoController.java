@@ -53,7 +53,14 @@ public class VeiculoController {
 
     }
 
-    @GetMapping("/{placa}")
+    @GetMapping("/{id}")
+    public ResponseEntity<VeiculoResponse> buscaVeiculoPorId(@PathVariable UUID id) {
+
+        return ResponseEntity.ok(veiculoService.buscarVeiculoPorId(id));
+
+    }
+
+    @GetMapping("/placa/{placa}")
     public ResponseEntity<VeiculoResponseDetails> buscarVeiculoPelaPlaca(@PathVariable String placa) {
 
         return ResponseEntity.ok(veiculoService.buscarVeiculoPelaPlaca(placa));

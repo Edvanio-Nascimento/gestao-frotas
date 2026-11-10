@@ -19,7 +19,7 @@ public record VeiculoRequest(
         String modelo,
 
         @NotBlank(message = "O campo é obrigatório.")
-        @Size(max = 50, message = "O campo placa deve ter no máximo 10 caracteres.")
+        @Size(max = 10, message = "O campo placa deve ter no máximo 10 caracteres.")
         String placa,
 
         @NotNull(message = "O campo ano de fabricação é obrigatŕoio.")
@@ -27,7 +27,7 @@ public record VeiculoRequest(
         Year anoFabricacao,
 
         @NotNull(message = "O campo ano do modelo é obrigatŕoio.")
-        @PastOrPresent(message = "Ano deve ser um no passado ou atual.")
+//        @FutureOrPresent(message = "Ano do modelo deve ser igual ao ano de fabricação ou 1 ano depois do ano de fabricação.")
         Year anoModelo
 
 ) {
@@ -35,9 +35,9 @@ public record VeiculoRequest(
     public Veiculo toEntiy() {
 
         return Veiculo.builder()
-                .marca(this.marca.toUpperCase())
-                .modelo(this.modelo.toUpperCase())
-                .placa(this.placa.toUpperCase())
+                .marca(this.marca.toUpperCase().trim())
+                .modelo(this.modelo.toUpperCase().trim())
+                .placa(this.placa.toUpperCase().trim())
                 .anoFabricacao(this.anoFabricacao)
                 .anoModelo(this.anoModelo)
                 .build();
