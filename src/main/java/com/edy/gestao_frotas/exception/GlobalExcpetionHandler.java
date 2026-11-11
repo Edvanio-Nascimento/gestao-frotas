@@ -1,5 +1,6 @@
 package com.edy.gestao_frotas.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -38,6 +39,25 @@ public class GlobalExcpetionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+
+        String origemErro = ex.getMostSpecificCause().getMessage();
+
+        if (origemErro != null && origemErro.toLowerCase().contains("uk_veiculo_placa")) {
+            throw new PlacaDuplicadaException("Já existe um veículo cadastrado com esta placa.");
+        }
+
+        ApiErrorResponse error = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Erro de integridade nos dados enviados. Verifique as informações e tente novamente.",
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
     }
 

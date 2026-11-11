@@ -10,6 +10,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +32,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "tb_veiculos")
+@Table(name = "tb_veiculos",
+        uniqueConstraints = {@UniqueConstraint(name = "uk_veiculo_placa", columnNames = "placa")}
+)
 public class Veiculo implements Serializable {
 
     @Serial

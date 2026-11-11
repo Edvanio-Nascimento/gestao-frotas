@@ -32,12 +32,7 @@ public class VeiculoService {
             throw new PlacaDuplicadaException("Veículo já cadastrado com essa placa: " + request.placa());
         }
 
-        Year anoFab = request.anoFabricacao();
-        Year anoMod = request.anoModelo();
-
-        if (!anoMod.equals(anoFab) && !anoMod.equals(anoFab.plusYears(1))) {
-            throw new AnoModeloInvalidoException("Ano do modelo deve ser igual ao ano de fabricação ou 1 ano subsequente.");
-        }
+        validarAnoModelo(request.anoFabricacao(), request.anoModelo());
 
         Veiculo veiculo = request.toEntiy();
 
@@ -93,14 +88,7 @@ public class VeiculoService {
             throw new PlacaDuplicadaException("A placa fornecida já está cadastrada em outro o ID.");
         }
 
-//        validarData();
-
-        Year anoFab = update.anoFabricacao();
-        Year anoMod = update.anoModelo();
-
-        if (!anoMod.equals(anoFab) && !anoMod.equals(anoFab.plusYears(1))) {
-            throw new AnoModeloInvalidoException("Ano do modelo deve ser igual ao ano de fabricação ou 1 ano subsequente.");
-        }
+            validarAnoModelo(update.anoFabricacao(), update.anoModelo());
 
         veiculo.setMarca(update.marca().toUpperCase().trim());
 
@@ -114,18 +102,12 @@ public class VeiculoService {
 
     }
 
-    private boolean validarData() {
+    private void validarAnoModelo(Year anoFab, Year anoMod) {
 
-        Veiculo veiculo = new Veiculo();
-
-        Year anoFab = veiculo.getAnoFabricacao();
-        Year anoMod = veiculo.getAnoModelo();
-
-        if (!anoMod.equals(anoFab) && !anoMod.equals(anoFab.plusYears(1))) {
+        if (!anoMod.equals(anoFab) && !anoMod.equals(anoFab.equals(anoFab.plusYears(1)))) {
             throw new AnoModeloInvalidoException("Ano do modelo deve ser igual ao ano de fabricação ou 1 ano subsequente.");
         }
 
-        return true;
     }
 
 }
