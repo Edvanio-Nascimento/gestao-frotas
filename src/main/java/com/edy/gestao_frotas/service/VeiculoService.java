@@ -5,6 +5,9 @@ import com.edy.gestao_frotas.domain.dto.veiculo.VeiculoResponse;
 import com.edy.gestao_frotas.domain.dto.veiculo.VeiculoResponseDetails;
 import com.edy.gestao_frotas.domain.dto.veiculo.VeiculoUpdate;
 import com.edy.gestao_frotas.domain.entity.Veiculo;
+import com.edy.gestao_frotas.exception.AnoModeloInvalidoException;
+import com.edy.gestao_frotas.exception.PlacaDuplicadaException;
+import com.edy.gestao_frotas.exception.VeiculoNaoEncontradoException;
 import com.edy.gestao_frotas.repository.VeiculoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +29,14 @@ public class VeiculoService {
     public VeiculoResponse salvarVeiculo(VeiculoRequest request) {
 
         if (veiculoRepository.existsByPlaca(request.placa().trim().toUpperCase())) {
-            throw new RuntimeException("Veículo já cadastrado com essa placa: " + request.placa());
+            throw new PlacaDuplicadaException("Veículo já cadastrado com essa placa: " + request.placa());
         }
 
         Year anoFab = request.anoFabricacao();
         Year anoMod = request.anoModelo();
 
         if (!anoMod.equals(anoFab) && !anoMod.equals(anoFab.plusYears(1))) {
-            throw new IllegalArgumentException("Ano do modelo deve ser igual ao ano de fabricação ou 1 ano subsequente.");
+            throw new AnoModeloInvalidoException("Ano do modelo deve ser igual ao ano de fabricação ou 1 ano subsequente.");
         }
 
         Veiculo veiculo = request.toEntiy();
@@ -53,8 +56,8 @@ public class VeiculoService {
     @Transactional(readOnly = true)
     public VeiculoResponseDetails buscarVeiculoPelaPlaca(String placa) {
 
-        Veiculo veiculo = veiculoRepository.findByPlaca(placa)
-                .orElseThrow(() -> new RuntimeException("Veículo não encontrado com essa placa: " + placa));
+        Veiculo veiculo = veiculoRepository.findByPlaca(placa.toUpperCase().trim())
+                .orElseThrow(() -> new VeiculoNaoEncontradoException("Veículo não encontrado com essa placa: " + placa));
 
         return VeiculoResponseDetails.toResponseDetails(veiculo);
 
@@ -64,7 +67,7 @@ public class VeiculoService {
     public VeiculoResponse buscarVeiculoPorId(UUID id) {
 
         Veiculo veiculo = veiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Veículo não encontrado com esse id: " + id));
+                .orElseThrow(() -> new VeiculoNaoEncontradoException("Veículo não encontrado com esse id: " + id));
 
         return VeiculoResponse.toResponse(veiculo);
 
@@ -74,7 +77,7 @@ public class VeiculoService {
     public void excluirVeiculo(UUID id) {
 
         Veiculo veiculo = veiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Veículo não encontrado com esse ID: " + id));
+                .orElseThrow(() -> new VeiculoNaoEncontradoException("Veículo não encontrado com esse ID: " + id));
 
         veiculoRepository.delete(veiculo);
 
@@ -84,20 +87,20 @@ public class VeiculoService {
     public void atualizarVeiculo(UUID id, VeiculoUpdate update) {
 
         Veiculo veiculo = veiculoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Veículo não encontrado com esse ID: " + id));
+                .orElseThrow(() -> new VeiculoNaoEncontradoException("Veículo não encontrado com esse ID: " + id));
 
         if (veiculoRepository.existsByPlacaAndIdNot(update.placa().trim().toUpperCase(), id)) {
-            throw new RuntimeException("A placa fornecida já está cadastrada em outro o ID.");
+            throw new PlacaDuplicadaException("A placa fornecida já está cadastrada em outro o ID.");
         }
 
-        validarData();
+//        validarData();
 
-//        Year anoFab = update.anoFabricacao();
-//        Year anoMod = update.anoModelo();
-//
-//        if (!anoMod.equals(anoFab) && !anoMod.equals(anoFab.plusYears(1))) {
-//            throw new IllegalArgumentException("Ano do modelo deve ser igual ao ano de fabricação ou 1 ano subsequente.");
-//        }
+        Year anoFab = update.anoFabricacao();
+        Year anoMod = update.anoModelo();
+
+        if (!anoMod.equals(anoFab) && !anoMod.equals(anoFab.plusYears(1))) {
+            throw new AnoModeloInvalidoException("Ano do modelo deve ser igual ao ano de fabricação ou 1 ano subsequente.");
+        }
 
         veiculo.setMarca(update.marca().toUpperCase().trim());
 
@@ -119,7 +122,7 @@ public class VeiculoService {
         Year anoMod = veiculo.getAnoModelo();
 
         if (!anoMod.equals(anoFab) && !anoMod.equals(anoFab.plusYears(1))) {
-            throw new IllegalArgumentException("Ano do modelo deve ser igual ao ano de fabricação ou 1 ano subsequente.");
+            throw new AnoModeloInvalidoException("Ano do modelo deve ser igual ao ano de fabricação ou 1 ano subsequente.");
         }
 
         return true;
